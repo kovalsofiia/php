@@ -11,5 +11,4 @@ class Accountings extends Model
     protected $fillable = [
         'ownerFullName', 'carBrand', 'carPlateNum', 'carColor'
     ];
-
 }

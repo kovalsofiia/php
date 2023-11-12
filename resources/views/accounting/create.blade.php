@@ -1,4 +1,5 @@
-    <a href="{{ route('cars.index') }}">Back</a>
+<h1>Create</h1>
+<a href="{{ route('cars.index') }}" style="color: darkgreen; font-weight: bold;">Back</a>
     <form action="{{ route('cars.store') }}" method="POST">
         @csrf
         @method('POST')
