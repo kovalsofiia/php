@@ -32,6 +32,7 @@ class AccountingController extends Controller
     public function store(Request $request) : RedirectResponse
     {
         Accountings::create([
+            //сюди дописати auth::user і передати id авторизованого користувача
             'ownerFullName' =>  $request -> input('ownerFullName'),
             'carBrand' =>  $request -> input('carBrand'),
             'carPlateNum' =>  $request -> input('carPlateNum'),
