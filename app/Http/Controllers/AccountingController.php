@@ -6,6 +6,8 @@ use App\Models\Accountings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class AccountingController extends Controller
 {
@@ -21,9 +23,15 @@ class AccountingController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create() : View
+    public function create()
     {
-        return view('accounting.create');
+        $user = Auth::user();
+        if(Gate::forUser($user)->allows('createCar')){
+            return view('accounting.create');
+        }
+        else {
+            echo "403";
+        }
     }
 
     /**
@@ -31,6 +39,8 @@ class AccountingController extends Controller
      */
     public function store(Request $request) : RedirectResponse
     {
+        $user = Auth::user();
+
         Accountings::create([
             //сюди дописати auth::user і передати id авторизованого користувача
             'ownerFullName' =>  $request -> input('ownerFullName'),
