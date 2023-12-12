@@ -16,8 +16,13 @@ class AccountingController extends Controller
      */
     public function index() : View
     {
+        //для всіх зареєстрованих
         $cars = Accountings::all();
-        return view('accounting.index', ['cars' => $cars]);
+        if(Gate::allows('object-view-create')){
+            return view('accounting.index', ['cars' => $cars]);
+        } else  {
+            dd("Block");
+        }
     }
 
     /**
@@ -25,12 +30,11 @@ class AccountingController extends Controller
      */
     public function create()
     {
-        $user = Auth::user();
-        if(Gate::forUser($user)->allows('createCar')){
+        //для всіх зареєстрованих
+        if(Gate::allows('object-view-create')){
             return view('accounting.create');
-        }
-        else {
-            echo "403";
+        } else  {
+            dd("Block");
         }
     }
 
@@ -39,16 +43,21 @@ class AccountingController extends Controller
      */
     public function store(Request $request) : RedirectResponse
     {
+        //для всіх зареєстрованих
         $user = Auth::user();
-
-        Accountings::create([
-            //сюди дописати auth::user і передати id авторизованого користувача
-            'ownerFullName' =>  $request -> input('ownerFullName'),
-            'carBrand' =>  $request -> input('carBrand'),
-            'carPlateNum' =>  $request -> input('carPlateNum'),
-            'carColor' =>  $request -> input('carColor'),
-        ]);
-        return redirect(route('cars.index'));
+        if(Gate::allows('object-view-create')){
+            Accountings::create([
+                'user_id' => $user->id,
+                //DONE сюди дописати auth::user і передати id авторизованого користувача
+                'ownerFullName' =>  $request -> input('ownerFullName'),
+                'carBrand' =>  $request -> input('carBrand'),
+                'carPlateNum' =>  $request -> input('carPlateNum'),
+                'carColor' =>  $request -> input('carColor'),
+            ]);
+            return redirect(route('cars.index'));
+        } else  {
+            dd("Block");
+        }
     }
 
     /**
@@ -56,12 +65,12 @@ class AccountingController extends Controller
      */
     public function show(string $id)
     {
+        //для всіх зареєстрованих
         $car = Accountings::find($id);
-
-        if ($car) {
+        if(Gate::allows('object-view-create') && $car){
             return view('accounting.show', ['car' => $car]);
-        } else {
-            return redirect()->route('cars.index')->with('error', 'Car not found');
+        } else  {
+            dd("Block");
         }
     }
 
@@ -70,8 +79,13 @@ class AccountingController extends Controller
      */
     public function edit(string $id)
     {
+        //для власного об*єкту створеного поточним користувачем
         $car = Accountings::find($id);
-        return view('accounting.edit', ['car' => $car]);
+        if(Gate::allows('object-edit', $car)){
+            return view('accounting.edit', ['car' => $car]);
+        } else  {
+            dd("Block");
+        }
     }
 
     /**
@@ -79,14 +93,19 @@ class AccountingController extends Controller
      */
     public function update(Request $request, string $id) : RedirectResponse
     {
+        //для власного об*єкту створеного поточним користувачем
         $car = Accountings::find($id);
-        $car->update([
-            'ownerFullName' => $request->input('ownerFullName'),
-            'carBrand' => $request->input('carBrand'),
-            'carPlateNum' => $request->input('carPlateNum'),
-            'carColor' => $request->input('carColor'),
-        ]);
-        return redirect()->route('cars.index');
+        if(Gate::allows('object-edit', $car)){
+            $car->update([
+                'ownerFullName' => $request->input('ownerFullName'),
+                'carBrand' => $request->input('carBrand'),
+                'carPlateNum' => $request->input('carPlateNum'),
+                'carColor' => $request->input('carColor'),
+            ]);
+            return redirect()->route('cars.index');
+        } else  {
+            dd("Block");
+        }
     }
 
     /**
@@ -94,12 +113,12 @@ class AccountingController extends Controller
      */
     public function destroy(string $id): RedirectResponse
     {
+        //для власного об*єкту створеного поточним користувачем
         $car = Accountings::find($id);
-
-        if ($car) {
+        if(Gate::allows('object-delete', $car)){
             $car->delete();
             return redirect()->route('cars.index')->with('success', 'Car deleted successfully');
-        } else {
+        } else  {
             return redirect()->route('cars.index')->with('error', 'Car not found');
         }
     }

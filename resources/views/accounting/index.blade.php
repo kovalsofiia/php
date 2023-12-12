@@ -3,6 +3,7 @@
 <table border="3">
     <tr>
         <th>ID</th>
+        <th>User ID</th>
         <th>Owner Full Name</th>
         <th>Brand</th>
         <th>Plate Number</th>
@@ -12,6 +13,7 @@
     @foreach($cars as $car)
         <tr>
             <td>{{ $car->id }}</td>
+            <td>{{ $car->user_id }}</td>
             <td>{{ $car->ownerFullName }}</td>
             <td>{{ $car->carBrand }}</td>
             <td>{{ $car->carPlateNum }}</td>

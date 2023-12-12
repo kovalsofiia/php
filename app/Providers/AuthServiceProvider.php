@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+use App\Models\Accountings;
 use App\Models\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -23,19 +24,23 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
-        Gate::define('createCar', function (User $user) {
-            return true;
+       Gate::define('object-view-create', function (User $user) {
+           return true;
+       });
+
+       Gate::define('object-edit', function (User $user, Accountings $car) {
+           if($user->role === "editor"|| $user->role === "super-admin"){
+                return true;
+           }
+           return $user->id === $car->user_id;
+       });
+
+        Gate::define('object-delete', function (User $user) {
+            if($user->role === "super-admin"){
+                return true;
+            }
+            return false;
         });
 
-        Gate::define('editCar', function (User $user, $tournament) {
-            if($user->role === "editor"||$user->role === "superadmin") return true;
-            return $user->id === $tournament->creator_user_id;
-        });
-
-        Gate::define('deleteCar', function (User $user, $tournament) {
-            if($user->role === "superadmin") return true;
-            return $user->id === $tournament->user_id;
-        });
     }
 }

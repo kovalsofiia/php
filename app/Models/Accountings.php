@@ -9,6 +9,6 @@ class Accountings extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'ownerFullName', 'carBrand', 'carPlateNum', 'carColor'
+        'user_id', 'ownerFullName', 'carBrand', 'carPlateNum', 'carColor'
     ];
 }
