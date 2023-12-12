@@ -43,19 +43,26 @@ class AccountingController extends Controller
      */
     public function store(Request $request) : RedirectResponse
     {
-        //для всіх зареєстрованих
+        // Валідація даних
+        $request->validate([
+            'ownerFullName' => 'required|string|max:255',
+            'carBrand' => 'required|string|max:255',
+            'carPlateNum' => 'required|string|max:20',
+            'carColor' => 'required|string|max:50',
+        ]);
+
+        // Для всіх зареєстрованих
         $user = Auth::user();
-        if(Gate::allows('object-view-create')){
+        if (Gate::allows('object-view-create')) {
             Accountings::create([
                 'user_id' => $user->id,
-                //DONE сюди дописати auth::user і передати id авторизованого користувача
-                'ownerFullName' =>  $request -> input('ownerFullName'),
-                'carBrand' =>  $request -> input('carBrand'),
-                'carPlateNum' =>  $request -> input('carPlateNum'),
-                'carColor' =>  $request -> input('carColor'),
+                'ownerFullName' => $request->input('ownerFullName'),
+                'carBrand' => $request->input('carBrand'),
+                'carPlateNum' => $request->input('carPlateNum'),
+                'carColor' => $request->input('carColor'),
             ]);
             return redirect(route('cars.index'));
-        } else  {
+        } else {
             dd("Block");
         }
     }
@@ -95,7 +102,13 @@ class AccountingController extends Controller
     {
         //для власного об*єкту створеного поточним користувачем
         $car = Accountings::find($id);
-        if(Gate::allows('object-edit', $car)){
+        $request->validate([
+            'ownerFullName' => 'required|string|max:255',
+            'carBrand' => 'required|string|max:255',
+            'carPlateNum' => 'required|string|max:20',
+            'carColor' => 'required|string|max:50',
+        ]);
+        if (Gate::allows('object-edit', $car)) {
             $car->update([
                 'ownerFullName' => $request->input('ownerFullName'),
                 'carBrand' => $request->input('carBrand'),
@@ -103,7 +116,7 @@ class AccountingController extends Controller
                 'carColor' => $request->input('carColor'),
             ]);
             return redirect()->route('cars.index');
-        } else  {
+        } else {
             dd("Block");
         }
     }
